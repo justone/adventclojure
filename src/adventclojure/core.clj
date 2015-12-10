@@ -51,6 +51,51 @@
 
 ; }}}
 
+; day 03 --------- ; {{{
+(defn move [[x y] dir]
+  (condp = dir
+    \> [(inc x) y]
+    \< [(dec x) y]
+    \^ [x (inc y)]
+    \v [x (dec y)]
+    ))
+
+#_(move [0 0] \>)
+#_(move [0 0] \<)
+#_(move [0 0] \^)
+#_(move [0 0] \v)
+
+(defn locations [directions]
+  (reduce #(conj %1 (move (last %1) %2)) [[0 0]] directions))
+
+(defn locations-w-robot [directions]
+  (->>
+    (apply vector directions)
+    (reduce-kv (fn [a i d] (update-in a [(rem i 2)] #(conj % (move (last %) d)))) [[[0 0]] [[0 0]]])
+    (apply concat)))
+
+#_(locations ">><<")
+#_(locations "^v^v^v^v^v")
+#_(locations-w-robot "<><>")
+#_(locations-w-robot "^v^v^v^v^v")
+
+(defn houses [file]
+  (let [data (trim (slurp file))
+        locations (locations data)]
+    (count (set locations))))
+
+(defn houses-w-robot [file]
+  (let [data (trim (slurp file))
+        locations (locations-w-robot data)]
+    (count (set locations))))
+
+#_(= 2572 (houses "day_03.txt"))
+#_(= 2 (houses "day_03-2.txt"))
+#_(= 2631 (houses-w-robot "day_03.txt"))
+#_(= 11 (houses-w-robot "day_03-2.txt"))
+
+; }}}
+
 (defn -main
   "I don't do a whole lot ... yet."
   [& args]
