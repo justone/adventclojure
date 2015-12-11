@@ -2,6 +2,14 @@
   (:gen-class)
   (:require [clojure.string :refer [trim]]))
 
+; common functions --------- ; {{{
+
+(defn filter-file [file fn]
+  (with-open [reader (clojure.java.io/reader file)]
+    (count (filter fn (line-seq reader)))))
+
+; }}}
+
 ; day 01 --------- ; {{{
 (defn inc-dec [acc ch]
   ((if (= ch \() inc dec) acc))
@@ -12,7 +20,7 @@
 
 (defn day-01-part-02 [file]
   (let [data (apply vector (trim (slurp file)))]
-    (reduce-kv (fn [acc idx ch] 
+    (reduce-kv (fn [acc idx ch]
                  (let [new (inc-dec acc ch)]
                    (if (= -1 new) (reduced (inc idx)) new))) 0 data)))
 
@@ -120,6 +128,46 @@
 #_(take 5 (iterate inc 1))
 #_(= 282749 (find-first-zeroes "yzbqklnj" "00000"))
 #_(= 9962624 (find-first-zeroes "yzbqklnj" "000000"))
+
+; }}}
+
+; day 05 --------- ; {{{
+
+(defn three-vowels? [st]
+  (boolean (re-find #"[aeiou].*[aeiou].*[aeiou]" st)))
+(defn double-letters? [st]
+  (boolean (re-find #"(.)\1" st)))
+(defn no-bad-strs? [st]
+  (boolean (re-find #"^((?!(ab|cd|pq|xy)).)*$" st)))
+
+#_(three-vowels? "xazegov")
+#_(three-vowels? "dvszwmarrgswjxmb")
+#_(double-letters? "jchzalrnumimnmhp")
+#_(double-letters? "ugknbfddgicrmopn")
+#_(no-bad-strs? "haegwjzuvuyypxyu")
+#_(no-bad-strs? "ugknbfddgicrmopn")
+
+(def nice-string? (every-pred three-vowels? double-letters? no-bad-strs?))
+
+#_(nice-string? "haegwjzuvuyypxyu")
+#_(nice-string? "ugknbfddgicrmopn")
+#_(filter-file "day_05-2.txt" nice-string?)
+#_(= 258 (filter-file "day_05.txt" nice-string?))
+
+(defn two-pairs? [st]
+  (boolean (re-find #"(..).*\1" st)))
+(defn every-other? [st]
+  (boolean (re-find #"(.).\1" st)))
+
+#_(two-pairs? "xyxy")
+#_(two-pairs? "aaa")
+#_(every-other? "xyxy")
+#_(every-other? "aaa")
+
+(def nice-string2? (every-pred two-pairs? every-other?))
+
+#_(filter-file "day_05-2.txt" nice-string2?)
+#_(= 53 (filter-file "day_05.txt" nice-string2?))
 
 ; }}}
 
