@@ -96,6 +96,33 @@
 
 ; }}}
 
+; day 04 --------- ; {{{
+
+; from: http://rosettacode.org/wiki/MD5#Clojure
+(defn md5 [in]
+  (apply str
+         (map (partial format "%02x")
+              (.digest (doto (java.security.MessageDigest/getInstance "MD5")
+                         .reset
+                         (.update (.getBytes in)))))))
+
+#_(md5 "abcdef609043")
+#_(md5 "pqrstuv1048970")
+
+(defn find-first-zeroes [secret-key zeroes]
+  (let [num-and-hash (juxt identity #(md5 (str secret-key %)))]
+    (->> (iterate inc 1)
+         (map num-and-hash)
+         (filter #(.startsWith (second %) zeroes))
+         (take 1)
+         (apply first))))
+
+#_(take 5 (iterate inc 1))
+#_(= 282749 (find-first-zeroes "yzbqklnj" "00000"))
+#_(= 9962624 (find-first-zeroes "yzbqklnj" "000000"))
+
+; }}}
+
 (defn -main
   "I don't do a whole lot ... yet."
   [& args]
