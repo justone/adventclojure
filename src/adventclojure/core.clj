@@ -1,12 +1,16 @@
 (ns adventclojure.core
   (:gen-class)
-  (:require [clojure.string :refer [trim]]))
+  (:require [clojure.string :as st]))
 
 ; common functions --------- ; {{{
 
 (defn filter-file [file fn]
   (with-open [reader (clojure.java.io/reader file)]
     (count (filter fn (line-seq reader)))))
+
+(defn each-line [file fn init]
+  (with-open [reader (clojure.java.io/reader file)]
+    (reduce fn init (into [] (line-seq reader)))))
 
 ; }}}
 
@@ -15,11 +19,11 @@
   ((if (= ch \() inc dec) acc))
 
 (defn day-01-part-01 [file]
-  (let [data (trim (slurp file))]
+  (let [data (st/trim (slurp file))]
     (reduce inc-dec 0 data)))
 
 (defn day-01-part-02 [file]
-  (let [data (apply vector (trim (slurp file)))]
+  (let [data (apply vector (st/trim (slurp file)))]
     (reduce-kv (fn [acc idx ch]
                  (let [new (inc-dec acc ch)]
                    (if (= -1 new) (reduced (inc idx)) new))) 0 data)))
@@ -88,12 +92,12 @@
 #_(locations-w-robot "^v^v^v^v^v")
 
 (defn houses [file]
-  (let [data (trim (slurp file))
+  (let [data (st/trim (slurp file))
         locations (locations data)]
     (count (set locations))))
 
 (defn houses-w-robot [file]
-  (let [data (trim (slurp file))
+  (let [data (st/trim (slurp file))
         locations (locations-w-robot data)]
     (count (set locations))))
 
@@ -168,6 +172,60 @@
 
 #_(filter-file "day_05-2.txt" nice-string2?)
 #_(= 53 (filter-file "day_05.txt" nice-string2?))
+
+; }}}
+
+; day 06 --------- ; {{{
+
+(defn parse-instruction [inst-str]
+  (let [[_ act & coords] (re-matches #"^([\w ]+) (\d+),(\d+) through (\d+),(\d+)$" inst-str)
+        int-coords (map #(Integer/parseInt %) coords)]
+    (conj int-coords (keyword (st/replace act #"\W" "-")))))
+
+#_(parse-instruction "toggle 461,550 through 564,900")
+#_(parse-instruction "turn off 370,39 through 425,839")
+#_(parse-instruction "turn on 599,989 through 806,993")
+
+(defn make-grid [len]
+  (into [] (repeat len (into [] (repeat len 0)))))
+
+#_(update-in (make-grid 6) [4 3] (:toggle actions))
+
+(def actions-part-1
+  {:toggle #(get [1 0] %)
+   :turn-on (constantly 1)
+   :turn-off (constantly 0)})
+
+(def actions-part-2
+  {:toggle (comp inc inc)
+   :turn-on inc
+   :turn-off #(let [n (dec %)] (if (> 0 n) 0 n))})
+
+(defn print-count [f] (println (reduce + (apply concat f))) f)
+
+; put (println instruction) in and wrap reduce with print-count to see steps
+(defn act [actions grid instruction]
+  (let [[action x1 y1 x2 y2] (parse-instruction instruction)
+        action (action actions)]
+    (reduce
+      #(update-in %1 %2 action)
+      grid
+      (reverse (for [x (range x1 (inc x2)) y (range y1 (inc y2))] [x y])))))
+
+#_(act "toggle 0,1 through 0,1" (make-grid 3))
+#_(act "toggle 0,1 through 0,1" (act "turn on 1,2 through 1,2" (make-grid 3)))
+#_(reduce act (make-grid 3) ["turn on 1,2 through 1,2" "toggle 0,1 through 0,1"])
+
+(defn brightness [actions instruction-file grid-size]
+  (->> (make-grid grid-size)
+       (each-line instruction-file (partial act actions))
+       (apply concat)
+       (reduce +)))
+
+#_(brightness actions-part-1 "day_06-2.txt" 4)
+#_(= 543903 (brightness actions-part-1 "day_06.txt" 1000))
+#_(brightness actions-part-2 "day_06-2.txt" 4)
+#_(= 14687245 (brightness actions-part-2 "day_06.txt" 1000))
 
 ; }}}
 
