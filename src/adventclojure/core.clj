@@ -210,7 +210,7 @@
     (reduce
       #(update-in %1 %2 action)
       grid
-      (reverse (for [x (range x1 (inc x2)) y (range y1 (inc y2))] [x y])))))
+      (for [x (range x1 (inc x2)) y (range y1 (inc y2))] [x y]))))
 
 #_(act "toggle 0,1 through 0,1" (make-grid 3))
 #_(act "toggle 0,1 through 0,1" (act "turn on 1,2 through 1,2" (make-grid 3)))
