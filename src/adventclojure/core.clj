@@ -259,11 +259,7 @@
 #_(= 1342 (actual-char-count data-08))
 
 (defn count-encoded [str]
-  (+ 2
-     (reduce + (map #(condp = %
-                       \\ 2
-                       \" 2
-                       1) str))))
+  (+ 2 (reduce + (map #(if (#{\\ \"} %) 2 1) str))))
 
 #_(= 6 (count-encoded "\"\""))
 #_(= 9 (count-encoded "\"abc\""))
