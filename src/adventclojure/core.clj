@@ -2,7 +2,8 @@
   (:gen-class)
   (:import [java.util.regex Matcher])
   (:require [clojure.string :as st]
-            [clojure.java.io :as io]))
+            [clojure.java.io :as io]
+            [clojure.math.combinatorics :as combo]))
 
 ; common functions --------- ; {{{
 
@@ -269,6 +270,40 @@
 
 #_(= 2074 (encoded-count data-08))
 #_(= 19 (encoded-count data-08-2))
+
+; }}}
+
+; day 09 --------- ; {{{
+
+(defn- update-distances [distances [from to dist]]
+  (let [int-dist (Integer/parseInt dist)]
+    (-> distances
+        (assoc-in [from to] int-dist)
+        (assoc-in [to from] int-dist))))
+
+(defn load-distances [resource]
+  (->> (line-seq (io/reader (io/resource resource)))
+       (map #(rest (re-matches #"^([\w]+) to ([\w]+) = (\d+)$" %)))
+       (reduce update-distances {})))
+
+(defn route-distance [distances route]
+  (->> route
+       (partition 2 1)
+       (map #(get-in distances %))
+       (reduce +)))
+
+(defn route-distances [resource]
+  (let [distances (load-distances resource)]
+    (->> (keys distances)
+         (combo/permutations)
+         (map (partial route-distance distances))
+         sort)))
+
+#_(= 605 (first (route-distances "data-09-2")))
+#_(= 207 (first (route-distances "data-09")))
+
+#_(= 982 (last (route-distances "data-09-2")))
+#_(= 804 (last (route-distances "data-09")))
 
 ; }}}
 
