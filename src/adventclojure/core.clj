@@ -307,6 +307,21 @@
 
 ; }}}
 
+; day 10 --------- ; {{{
+
+(defn verbalize [string]
+  (->> (re-seq #"(.)\1*" string)
+       (mapcat #(update % 0 count))
+       (apply str)))
+
+#_(verbalize "11233")
+#_(count (last (take 6 (iterate verbalize "1"))))
+
+#_(count (last (take 41 (iterate verbalize "1321131112"))))
+#_(count (last (take 51 (iterate verbalize "1321131112"))))
+
+; }}}
+
 (defn -main
   "I don't do a whole lot ... yet."
   [& args]
