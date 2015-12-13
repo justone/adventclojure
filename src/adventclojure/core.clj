@@ -1,6 +1,8 @@
 (ns adventclojure.core
   (:gen-class)
-  (:require [clojure.string :as st]))
+  (:import [java.util.regex Matcher])
+  (:require [clojure.string :as st]
+            [clojure.java.io :as io]))
 
 ; common functions --------- ; {{{
 
@@ -226,6 +228,51 @@
 #_(= 543903 (brightness actions-part-1 "day_06.txt" 1000))
 #_(brightness actions-part-2 "day_06-2.txt" 4)
 #_(= 14687245 (brightness actions-part-2 "day_06.txt" 1000))
+
+; }}}
+
+; day 07 --------- ; {{{
+
+; not yet (-:
+
+; }}}
+
+; day 08 --------- ; {{{
+
+(def data-08 (line-seq (io/reader (io/resource "data-08"))))
+(def data-08-2 (line-seq (io/reader (io/resource "data-08-2"))))
+
+(defn count-decoded [str]
+  (-> str
+      (st/replace #"\\\\" "f")
+      (st/replace #"\\x[0-9a-f]{2}" "f")
+      (read-string)
+      (count)))
+
+#_(= 1 (count-decoded "\"\\x27\""))
+#_(= 22 (count-decoded "\"ubgxxcvnltzaucrzg\\\\xcez\""))
+
+(defn actual-char-count [data]
+  (- (reduce + (map count data)) (reduce + (map count-decoded data))))
+
+#_(= 12 (actual-char-count data-08-2))
+#_(= 1342 (actual-char-count data-08))
+
+(defn count-encoded [str]
+  (+ 2
+     (reduce + (map #(condp = %
+                       \\ 2
+                       \" 2
+                       1) str))))
+
+#_(= 6 (count-encoded "\"\""))
+#_(= 9 (count-encoded "\"abc\""))
+
+(defn encoded-count [data]
+  (- (reduce + (map count-encoded data)) (reduce + (map count data))))
+
+#_(= 2074 (encoded-count data-08))
+#_(= 19 (encoded-count data-08-2))
 
 ; }}}
 
