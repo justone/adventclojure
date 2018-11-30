@@ -2,6 +2,7 @@
 
 See <http://adventofcode.com/> for more information.
 
-All solutions are in the [`src/adventclojure/core.clj`](https://github.com/justone/adventclojure/blob/master/src/adventclojure/core.clj) file.
+Solutions are grouped by year:
 
-Inspired by [bhauman](https://github.com/bhauman/advent-of-clojure).
+* [2015](2015/)
+* [2018](2018/)
