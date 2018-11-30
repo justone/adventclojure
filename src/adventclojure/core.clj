@@ -322,6 +322,54 @@
 
 ; }}}
 
+; day 11 --------- ; {{{
+
+(defn inc-ch [before]
+  (char (inc (int before))))
+
+(defn inc-str [before]
+  (-> before
+      reverse
+      (#(condp = (first %)
+          \z (conj (next (next %)) (inc-ch (second %)) \a)
+          (conj (rest %) (inc-ch (first %)))))
+      reverse
+      (#(apply str %))))
+
+(char (int \a))
+#_(= "ab" (inc-str "aa"))
+#_(= "ba" (inc-str "az"))
+#_(= "hijklmna" (inc-str "hijklmmz"))
+#_(count (last (take 6 (iterate verbalize "1"))))
+
+#_(group-by identity "aafjleibb")
+
+(defn two-pair? [st]
+  (boolean (re-find #"(.)\1.*(.)\2" st)))
+(defn no-bad-chars? [st]
+  (boolean (re-find #"^((?![iol]).)*$" st)))
+(defn has-straight? [st]
+  (boolean (some #(= % (take 3 (iterate inc-ch (first %)))) (partition 3 1 st))))
+(defn printit [st]
+  (println st)
+  true)
+
+(take 3 (iterate inc-ch \a))
+
+#_(def valid-password? (every-pred two-pair? no-bad-chars? has-straight? printit))
+#_(take 1 (filter valid-password? (iterate inc-str "abcdefgh")))
+#_(two-pair? "aafjleib")
+#_(no-bad-chars? "aafjleib")
+#_(no-bad-chars? "aafjeo")
+#_(has-straight? "abcjeo")
+#_(has-straight? "acbjeo")
+#_(valid-password? "abcdffaa")
+
+#_(count (last (take 41 (iterate verbalize "1321131112"))))
+#_(count (last (take 51 (iterate verbalize "1321131112"))))
+
+; }}}
+
 (defn -main
   "I don't do a whole lot ... yet."
   [& args]
