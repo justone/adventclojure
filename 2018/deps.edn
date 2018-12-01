@@ -3,4 +3,5 @@
                   :extra-deps {com.bhauman/rebel-readline {:mvn/version "0.1.4"}
                                org.clojure/tools.nrepl {:mvn/version "0.2.13"}
                                cider/cider-nrepl {:mvn/version "0.18.0"}}}}
+ :paths ["src" "resources"]
  :deps {org.clojure/clojure {:mvn/version "1.9.0"}}}
