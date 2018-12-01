@@ -4,14 +4,20 @@
     [clojure.string :as string]
     ))
 
+
+;; common
+
 (defn data-ints
   [dataset]
   (mapv c/parse-int (c/data-seq dataset)))
 
+
 ;; Part 1
+
 (defn part-1
   [dataset]
   (apply + (data-ints dataset)))
+
 
 #_(part-1 "day_01")
 #_(part-1 "day_01_sample")
@@ -38,8 +44,29 @@
                  new-val
                  (next-valid-idx changes idx)))))))
 
+
 #_(part-2 "day_01")
 #_(part-2 "day_01_sample")
+#_(part-2 "day_01_sample2")
+#_(part-2 "day_01_sample3")
 
-;; something with cycle could work...
-(take 10 (cycle (data-ints "day_01_sample")))
+;; Part 2 take 2
+
+(defn part-2-cycle
+  [dataset]
+  (loop [visited #{0}
+         current 0
+         changes (cycle (data-ints dataset))]
+    (let [[change & remaining] changes
+          new-val (+ current change)]
+      (if (visited new-val)
+          new-val
+          (recur (conj visited new-val)
+                 new-val
+                 remaining)))))
+
+
+#_(part-2-cycle "day_01")
+#_(part-2-cycle "day_01_sample")
+#_(part-2-cycle "day_01_sample2")
+#_(part-2-cycle "day_01_sample3")
