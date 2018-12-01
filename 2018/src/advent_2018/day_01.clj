@@ -70,3 +70,22 @@
 #_(part-2-cycle "day_01_sample")
 #_(part-2-cycle "day_01_sample2")
 #_(part-2-cycle "day_01_sample3")
+
+
+;; Part 2 take 3
+
+(defn part-2-reduce
+  [dataset]
+  (reduce
+    (fn [[visited current] change]
+      (let [new-val (+ current change)]
+        (if (visited new-val)
+          (reduced new-val)
+          [(conj visited new-val) new-val])))
+    [#{0} 0] (cycle (data-ints dataset))))
+
+
+#_(part-2-reduce "day_01")
+#_(part-2-reduce "day_01_sample")
+#_(part-2-reduce "day_01_sample2")
+#_(part-2-reduce "day_01_sample3")
